@@ -3,6 +3,17 @@ import random
 from scipy.spatial import distance
 from itertools import permutations
 
+
+class Individual:
+    def __init__(self, cromossome, fit):
+        self.cromossome = cromossome
+        self.fit = fit
+        self.evaluate = None
+
+    def __repr__(self):
+        return str(self.cromossome)
+
+
 cities = [
     {0: [1304, 2312]},
     {1: [3639, 1315]},
@@ -57,12 +68,13 @@ createMatrixWeight(cities)
 
 
 def generateIndividual(cromossomeLength):
-    individual = []
-    while len(individual) < cromossomeLength:
+    cromossome = []
+    while len(cromossome) < cromossomeLength:
         randomNumber = random.randint(0, 30)
-        if randomNumber not in individual:
-            individual.append(randomNumber)
-    return individual
+        if randomNumber not in cromossome:
+            cromossome.append(randomNumber)
+    fit = calcFitness(cromossome)
+    return Individual(cromossome, fit)
 
 
 def calcFitness(ind):
@@ -73,7 +85,7 @@ def calcFitness(ind):
         #print('ind i:{} e ind i+1: {}'.format(ind[i], ind[i+1]))
         summ = summ + Matrix[ind[i]][ind[i+1]]
     #print('ind i:{} e ind i+1: {}'.format(ind[end], ind[0]))
-    summ = summ + Matrix[end][ind[0]]
+    summ = summ + Matrix[ind[end]][ind[0]]
     return summ
 
 
@@ -86,7 +98,7 @@ def generateInitialPopulation(numberIndividuos):
 
 
 def mutation(ind):
-    copy_ind = ind.copy()
+    copy_ind = Individual(ind.cromossome, None)
     print(ind)
     pointA = random.randint(0, 30)
     pointB = random.randint(0, 30)
@@ -95,14 +107,16 @@ def mutation(ind):
     if pointA == pointB:
         return mutation(ind)
 
-    aux = copy_ind[pointA]
-    copy_ind[pointA] = copy_ind[pointB]
-    copy_ind[pointB] = aux
+    aux = copy_ind.cromossome[pointA]
+    copy_ind.cromossome[pointA] = copy_ind.cromossome[pointB]
+    copy_ind.cromossome[pointB] = aux
 
-    fitInd = calcFitness(ind)
-    fitCopy = calcFitness(copy_ind)
+    copy_ind.fit = calcFitness(copy_ind.cromossome)
 
-    if fitInd < fitCopy:
+    print(ind.fit)
+    print(copy_ind.fit)
+
+    if ind.fit < copy_ind.fit:
         return ind
     else:
         return copy_ind

@@ -2,6 +2,11 @@ import numpy
 import random
 import pandas
 from scipy.spatial import distance
+import matplotlib.pyplot as plt
+import networkx as nx
+
+fits = []
+gens = []
 
 
 class Individual:
@@ -99,10 +104,9 @@ def generatePopulation(numberIndividuos):
 
 def mutation(ind):
     copy_ind = Individual(ind.cromossome, None)
-    print(ind)
+
     pointA = random.randint(0, 30)
     pointB = random.randint(0, 30)
-    #print('Pontos: {} e {}'.format(pointA, pointB))
 
     if pointA == pointB:
         return mutation(ind)
@@ -113,13 +117,27 @@ def mutation(ind):
 
     copy_ind.fit = calcFitness(copy_ind.cromossome)
 
-    # print(ind.fit)
-    # print(copy_ind.fit)
-
     if ind.fit < copy_ind.fit:
         return ind
     else:
         return copy_ind
+
+
+def mutation2(ind):
+    copy_ind = Individual(ind.cromossome, None)
+    copy_ind.evaluation = ind.evaluation
+
+    pointA = random.randint(0, 30)
+    pointB = random.randint(0, 30)
+
+    if pointA == pointB:
+        return mutation(ind)
+
+    aux = copy_ind.cromossome[pointA]
+    copy_ind.cromossome[pointA] = copy_ind.cromossome[pointB]
+    copy_ind.cromossome[pointB] = aux
+
+    return copy_ind
 
 
 def getBestWorstFit(pop):
@@ -271,7 +289,7 @@ def RunGeneticAlgorithm(generations, numberOfIndividuals, crossoverProbability, 
         for individual in individualsBeforeCrossover:
             r = random.random()
             if r <= mutationProbability:
-                individual = mutation(individual)
+                individual = mutation2(individual)
 
         individualsBeforeMutation = individualsBeforeCrossover
         number = numberOfIndividuals - len(individualsBeforeMutation)
@@ -285,12 +303,23 @@ def RunGeneticAlgorithm(generations, numberOfIndividuals, crossoverProbability, 
 
         print('Best solution of generattion: ', globalBestSolution.fit)
         gen += 1
+        gens.append(gen)
+        fits.append(globalBestSolution.fit)
 
     return globalBestSolution
 
 
-best = RunGeneticAlgorithm(1000, 200, 0.9, 0.02)
+#RunGeneticAlgorithm(NúmeroGerações, TamanhoPopulação, ProbCruzamento, ProbMutaçã)
+best = RunGeneticAlgorithm(2000, 200, 0.9, 0.02)
 
-print('FINAL RESULTS: THE BEST SOLUTION')
-print('Fit: {}'.format(best.fit))
-print('Cromossome: {}'.format(best.cromossome))
+print('RESULTADO FINAL COM A MELHOR SOLUÇÃO ENCONTRADA')
+print('APTIDÃO DO MELHOR INDIVIDUO: {}'.format(best.fit))
+print('MELHOR CAMIMHO: {}'.format(best.cromossome))
+
+# Gerando o grafico da solução
+plt.plot(gens, fits)
+plt.xlim(0, 2000)
+plt.title('Evolução da aptidão ao longo das gerações')
+plt.xlabel('Eixo X - Gerações')
+plt.ylabel('Eixo Y - Aptidão')
+plt.show()

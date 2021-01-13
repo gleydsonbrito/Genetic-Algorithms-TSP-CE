@@ -271,7 +271,7 @@ def RunGeneticAlgorithm(generations, numberOfIndividuals, crossoverProbability, 
         # for i in initialPopulation:
         #    print('Fit: {}, Eval: {}'.format(i.fit, i.evaluation))
 
-        selectedIndividuals = rouleteWheel(basePopulation, 50)
+        selectedIndividuals = rouleteWheel(basePopulation, 100)
 
         individualsBeforeCrossover = []
         for i in range(0, len(selectedIndividuals)-1, 2):
@@ -310,7 +310,7 @@ def RunGeneticAlgorithm(generations, numberOfIndividuals, crossoverProbability, 
 
 
 #RunGeneticAlgorithm(NúmeroGerações, TamanhoPopulação, ProbCruzamento, ProbMutaçã)
-best = RunGeneticAlgorithm(2000, 200, 0.9, 0.02)
+best = RunGeneticAlgorithm(1000, 150, 0.9, 0.02)
 
 print('RESULTADO FINAL COM A MELHOR SOLUÇÃO ENCONTRADA')
 print('APTIDÃO DO MELHOR INDIVIDUO: {}'.format(best.fit))
@@ -318,7 +318,7 @@ print('MELHOR CAMIMHO: {}'.format(best.cromossome))
 
 # Gerando o grafico da solução
 plt.plot(gens, fits)
-plt.xlim(0, 2000)
+plt.xlim(0, 1000)
 plt.title('Evolução da aptidão ao longo das gerações')
 plt.xlabel('Eixo X - Gerações')
 plt.ylabel('Eixo Y - Aptidão')
